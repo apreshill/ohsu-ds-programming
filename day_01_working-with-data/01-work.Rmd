@@ -202,7 +202,7 @@ mazes %>%
 
 # frequency tables
 mazes_tab <- mazes %>% 
-  tabyl(dx, activity)
+  tabyl(dx, activity) # from janitor package
 mazes_tab
 mazes_tab %>% 
   adorn_percentages("col") %>% 
@@ -245,6 +245,13 @@ Five main single-table verbs in `dplyr`:
 * `summarize`: Create summary measures of variables (or groups of observations on variables using `group_by`)
 * `mutate`: Make a new variable in the data frame
 * `arrange`: Sort the rows based on one or more variables
+
+Combine with `group_by()`
+
+
+http://moderndive.com/5-wrangling.html
+
+
 
 # Tidying data
 
@@ -338,10 +345,11 @@ plot <- ggplot(mazes, aes(x = content, y = filler, color = dx)) +
   facet_wrap(~activity)
 plot
 
-plot <- ggplot(mazes, aes(x = content, y = filler, color = dx)) +
-  geom_point(alpha = .5) +
-  facet_wrap(~activity) +
-  geom_smooth(se = FALSE)
+plot <- ggplot(mazes, aes(x = content, y = filler)) +
+  geom_smooth(se = FALSE) +
+  geom_point(aes(color = content), shape = 10) +
+  facet_wrap(~activity) 
+  
 plot
 ```
 
