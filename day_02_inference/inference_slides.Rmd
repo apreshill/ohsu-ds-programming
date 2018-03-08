@@ -554,17 +554,20 @@ What does this test assume?
 
 ```{r eval = FALSE}
 library(readr)
-mazes <- read_csv("http://bit.ly/mazes-gist")
+mazes <- read_csv("http://bit.ly/mazes-gist") %>% 
+  clean_names() #janitor package
 ```
 
 
-- Use `dplyr::filter` to include only two groups (`dx`).
+- Use `dplyr::filter` to include only two groups (`DX` if you didn't `clean_names()`; `dx` if you did!).
 
 - Use `infer` to compare a numerical variable between the two groups using:
     - A permutation test and
     - A classical theoretical test.
     
-See: https://infer-dev.netlify.com/index.html
+See: https://infer-dev.netlify.com
+
+About the data: [Quantitative analysis of disfluency in children with autism spectrum disorder or language impairment](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0173936)
 
 
 ---
