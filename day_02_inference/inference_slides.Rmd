@@ -160,7 +160,7 @@ $H_0$:
 
 $H_1$ (directional): 
 
-> The proportion of people who yawned is greater for those in the seed group than in the control group.
+> More people (relatively) yawned in the seed group than in the control group.
 
 ---
 
@@ -238,7 +238,11 @@ class: inverse, middle, center
 
 --
 
-## Different question: is this difference *significant*?
+## Different question: 
+
+--
+
+## Is this difference *significant*?
 
 ---
 
@@ -284,11 +288,11 @@ perm1 <- yawn_myth %>%
   generate(reps = 1, type = "permute") %>% 
   ungroup() %>% 
   mutate(subj = seq(1,50)) %>% 
-  select(subj, parallel_group = group, parallel_yawn = yawn) 
+  select(subj, group, alt_yawn = yawn) 
 perm1 %>% 
   slice(c(1:6, 15:20))
 perm1 %>% 
-  tabyl(parallel_group, parallel_yawn) %>% 
+  tabyl(group, alt_yawn) %>% 
   adorn_totals(where = c("row", "col"))
 ```
 ]
@@ -331,9 +335,9 @@ null_distn <- yawn_myth %>%
   generate(reps = 1000, type = "permute") %>% 
   calculate(stat = "diff in props", 
             order = c("seed", "control"))
-null_plot <- ggplot(null_distn, aes(stat)) +
-  geom_histogram() +
-  geom_vline(xintercept = obs_diff, color = "blue") +
+null_plot <- null_distn %>% 
+  visualize(., bins = 10) +
+  geom_vline(xintercept = obs_diff, color = "dodgerblue", size = 2) +
   labs(x = "Difference in proportions") +
   coord_cartesian(xlim = c(-.5, .5), ylim = c(0, 260)) +
   geom_rect(aes(xmin = obs_diff, xmax = .5, ymin = 0, ymax = 130), 
@@ -342,7 +346,6 @@ null_plot <- ggplot(null_distn, aes(stat)) +
 null_plot
 ```
 
-What are we looking at? 
 
 The distribution of 1000 differences in proportions, if the null hypothesis were *true* and yawning was not contagious. 
 
@@ -354,7 +357,10 @@ In how many of our "parallel universes" is the difference as big or bigger than 
 
 ```{r echo = FALSE}
 null_plot +
-  geom_rect(aes(xmin = obs_diff, xmax = .5, ymin = 0, ymax = Inf), 
+  geom_rect(aes(xmin = obs_diff, 
+                xmax = Inf, 
+                ymin = 0, 
+                ymax = Inf), 
             fill = "dodgerblue", 
             alpha = .007)
 ```
@@ -455,13 +461,12 @@ class: inverse, center, middle
 
 # `infer`
 
-- `specify` the response and explanatory variables (`y ~ x`; for proportion also need `success`)
+- `specify` the response and explanatory variables (`y ~ x`)
 - `hypothesize` what the null $H_0$ is (here, `independence` of `y` and `x`)
 - `generate` new samples from parallel universes:
     - Resample from our original data **without replacement**, each time shuffling the `group` (`type = "permute"`)
     - Do this **a ton of times** (`reps = 1000`)
-- `calculate` the *new* statistic (here, difference in proportions) for each `rep`
-- `visualize` the output
+- `calculate` the *new* statistic (`stat = "diff in props"`) for each `rep`
 
 
 ```{r eval = FALSE}
@@ -475,20 +480,29 @@ null_distn <- yawn_myth %>%
 
 ---
 
-# Plot the null distribution
+# Visualize the null distribution
 
-```{r}
-ggplot(null_distn, aes(stat)) +
-  geom_histogram() +
-  geom_vline(xintercept = obs_diff, color = "blue") +
-  labs(x = "Difference in proportions")
+- `visualize` the distribution of the `stat` (here, `diff in props`)
+
+```{r echo = FALSE}
+null_plot
 ```
+
+
+```{r eval = FALSE}
+visualize(null_distn, bins = 10) +
+  geom_vline(xintercept = obs_diff, 
+             color = "dodgerblue",
+             size = 2) 
+```
+
+
 
 ---
 
 # Classical inference
 
-Relies on theory to tell us what the null distribution looks like. 
+Rely on theory to tell us what the null distribution looks like. 
 
 ```{r}
 yawn_myth %>%
@@ -496,14 +510,15 @@ yawn_myth %>%
   hypothesize(null = "independence") %>% 
   # generate() is not needed since we are not doing randomization
   # calculate(stat = "z") is implied based on variable types
-  visualize(method = "theoretical")
+  visualize(method = "theoretical")  +
+  geom_vline(xintercept = obs_diff, color = "dodgerblue", size = 2) 
 ```
 
 
 ---
 # Classical vs resampling
 
-I changed the `stat` to calculate to `z` now (before we did `diff in props`). 
+Changed the `stat` to calculate to `z` now (before we did `diff in props`). 
 
 ```{r}
 yawn_myth %>%
@@ -511,7 +526,8 @@ yawn_myth %>%
   hypothesize(null = "independence") %>% 
   generate(reps = 1000, type = "permute") %>% 
   calculate(stat = "z", order = c("seed", "control")) %>% 
-  visualize(method = "both")
+  visualize(method = "both", bins = 10) +
+  geom_vline(xintercept = obs_diff, color = "dodgerblue", size = 2) 
 ```
 
 ---
@@ -520,16 +536,27 @@ yawn_myth %>%
 
 ```{r}
 yawn_table <- table(group, yawn)
-yz <- prop.test(x = yawn_table,
-          n = nrow(yawn_myth),
-          alternative = "greater",
-          correct = FALSE) 
+yz <- prop.test(x = yawn_table, n = nrow(yawn_myth),
+          alternative = "greater", correct = FALSE) 
 yz
 ```
+
+--
+
+What does this test assume?
 
 ---
 
 # In class exercise
+
+- Read in the `mazes` data (http://bit.ly/mazes-gist)
+
+- Use `dplyr::filter` to include only two groups (`dx`).
+
+- Use `infer` to compare a numerical variable between the two groups using:
+    - A permutation test and
+    - A classical theoretical test.
+
 ---
 
 class: center, middle
@@ -538,4 +565,3 @@ class: center, middle
 
 Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
 
-The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).

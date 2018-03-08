@@ -4,7 +4,7 @@
     <title>Tidy Inference in R</title>
     <meta charset="utf-8">
     <meta name="author" content="Alison Hill" />
-    <meta name="date" content="2018-03-07" />
+    <meta name="date" content="2018-03-08" />
     <script src="libs/htmlwidgets/htmlwidgets.js"></script>
     <script src="libs/jquery/jquery.min.js"></script>
     <script src="libs/datatables-binding/datatables.js"></script>
@@ -21,7 +21,7 @@ class: center, middle, inverse, title-slide
 # Tidy Inference in R
 ## Data Science Programming
 ### Alison Hill
-### 2018-03-07
+### 2018-03-08
 
 ---
 
@@ -127,8 +127,8 @@ $ yawn  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
 ---
 class: middle, center
 
-<div id="htmlwidget-6961f8040de4a514e131" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6961f8040de4a514e131">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],["control","control","control","control","control","control","control","control","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed"],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>subj<\/th>\n      <th>group<\/th>\n      <th>yawn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":1},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-553bb32a38c135d3fb6b" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-553bb32a38c135d3fb6b">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],["control","control","control","control","control","control","control","control","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed"],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>subj<\/th>\n      <th>group<\/th>\n      <th>yawn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":1},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -185,7 +185,7 @@ class: inverse, middle, center
 
 `\(H_1\)` (directional): 
 
-&gt; The proportion of people who yawned is greater for those in the seed group than in the control group.
+&gt; More people (relatively) yawned in the seed group than in the control group.
 
 ---
 
@@ -277,7 +277,11 @@ class: inverse, middle, center
 
 --
 
-## Different question: is this difference *significant*?
+## Different question: 
+
+--
+
+## Is this difference *significant*?
 
 ---
 
@@ -335,27 +339,27 @@ class: inverse, center, middle
 
 ```
 # A tibble: 12 x 3
-    subj parallel_group parallel_yawn
-   &lt;int&gt; &lt;fct&gt;          &lt;fct&gt;        
- 1     1 control        0            
- 2     2 control        0            
- 3     3 control        1            
- 4     4 control        0            
- 5     5 control        0            
- 6     6 control        0            
- 7    15 seed           0            
- 8    16 seed           1            
- 9    17 seed           0            
-10    18 seed           0            
-11    19 seed           0            
-12    20 seed           1            
+    subj group   alt_yawn
+   &lt;int&gt; &lt;fct&gt;   &lt;fct&gt;   
+ 1     1 control 0       
+ 2     2 control 0       
+ 3     3 control 1       
+ 4     4 control 0       
+ 5     5 control 0       
+ 6     6 control 0       
+ 7    15 seed    0       
+ 8    16 seed    1       
+ 9    17 seed    0       
+10    18 seed    0       
+11    19 seed    0       
+12    20 seed    1       
 ```
 
 ```
- parallel_group  0  1 Total
-        control 12  4    16
-           seed 24 10    34
-          Total 36 14    50
+   group  0  1 Total
+ control 12  4    16
+    seed 24 10    34
+   Total 36 14    50
 ```
 ]
 
@@ -410,7 +414,6 @@ class: inverse, center, middle
 
 ![](inference_slides_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 
-What are we looking at? 
 
 The distribution of 1000 differences in proportions, if the null hypothesis were *true* and yawning was not contagious. 
 
@@ -519,13 +522,12 @@ class: inverse, center, middle
 
 # `infer`
 
-- `specify` the response and explanatory variables (`y ~ x`; for proportion also need `success`)
+- `specify` the response and explanatory variables (`y ~ x`)
 - `hypothesize` what the null `\(H_0\)` is (here, `independence` of `y` and `x`)
 - `generate` new samples from parallel universes:
     - Resample from our original data **without replacement**, each time shuffling the `group` (`type = "permute"`)
     - Do this **a ton of times** (`reps = 1000`)
-- `calculate` the *new* statistic (here, difference in proportions) for each `rep`
-- `visualize` the output
+- `calculate` the *new* statistic (`stat = "diff in props"`) for each `rep`
 
 
 
@@ -540,23 +542,28 @@ null_distn &lt;- yawn_myth %&gt;%
 
 ---
 
-# Plot the null distribution
+# Visualize the null distribution
+
+- `visualize` the distribution of the `stat` (here, `diff in props`)
+
+![](inference_slides_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
 
 
 ```r
-ggplot(null_distn, aes(stat)) +
-  geom_histogram() +
-  geom_vline(xintercept = obs_diff, color = "blue") +
-  labs(x = "Difference in proportions")
+visualize(null_distn, bins = 10) +
+  geom_vline(xintercept = obs_diff, 
+             color = "dodgerblue",
+             size = 2) 
 ```
 
-![](inference_slides_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
 
 ---
 
 # Classical inference
 
-Relies on theory to tell us what the null distribution looks like. 
+Rely on theory to tell us what the null distribution looks like. 
 
 
 ```r
@@ -565,16 +572,17 @@ yawn_myth %&gt;%
   hypothesize(null = "independence") %&gt;% 
   # generate() is not needed since we are not doing randomization
   # calculate(stat = "z") is implied based on variable types
-  visualize(method = "theoretical")
+  visualize(method = "theoretical")  +
+  geom_vline(xintercept = obs_diff, color = "dodgerblue", size = 2) 
 ```
 
-![](inference_slides_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+![](inference_slides_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 
 
 ---
 # Classical vs resampling
 
-I changed the `stat` to calculate to `z` now (before we did `diff in props`). 
+Changed the `stat` to calculate to `z` now (before we did `diff in props`). 
 
 
 ```r
@@ -583,10 +591,11 @@ yawn_myth %&gt;%
   hypothesize(null = "independence") %&gt;% 
   generate(reps = 1000, type = "permute") %&gt;% 
   calculate(stat = "z", order = c("seed", "control")) %&gt;% 
-  visualize(method = "both")
+  visualize(method = "both", bins = 10) +
+  geom_vline(xintercept = obs_diff, color = "dodgerblue", size = 2) 
 ```
 
-![](inference_slides_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+![](inference_slides_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -595,10 +604,8 @@ yawn_myth %&gt;%
 
 ```r
 yawn_table &lt;- table(group, yawn)
-yz &lt;- prop.test(x = yawn_table,
-          n = nrow(yawn_myth),
-          alternative = "greater",
-          correct = FALSE) 
+yz &lt;- prop.test(x = yawn_table, n = nrow(yawn_myth),
+          alternative = "greater", correct = FALSE) 
 yz
 ```
 
@@ -617,9 +624,22 @@ sample estimates:
 0.7500000 0.7058824 
 ```
 
+--
+
+What does this test assume?
+
 ---
 
 # In class exercise
+
+- Read in the `mazes` data (http://bit.ly/mazes-gist)
+
+- Use `dplyr::filter` to include only two groups (`dx`).
+
+- Use `infer` to compare a numerical variable between the two groups using:
+    - A permutation test and
+    - A classical theoretical test.
+
 ---
 
 class: center, middle
@@ -627,8 +647,6 @@ class: center, middle
 # Thanks!
 
 Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
-
-The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
