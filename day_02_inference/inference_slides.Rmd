@@ -25,7 +25,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE,
 
 ```{r eval = FALSE}
 install.packages("tidyverse")
-install.package("infer") # from CRAN
+install.packages("infer") # from CRAN
 # today I'll use the development version
 install.packages("remotes")
 remotes::install_github("andrewpbray/infer", ref = "develop")
@@ -551,6 +551,12 @@ What does this test assume?
 # In class exercise
 
 - Read in the `mazes` data (http://bit.ly/mazes-gist)
+
+```{r eval = FALSE}
+library(readr)
+mazes <- read_csv("http://bit.ly/mazes-gist")
+```
+
 
 - Use `dplyr::filter` to include only two groups (`dx`).
 
