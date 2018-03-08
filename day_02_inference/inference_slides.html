@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tidy Inference in R</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Alison Hill" />
+    <meta name="date" content="2018-03-07" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/jquery/jquery.min.js"></script>
+    <script src="libs/datatables-binding/datatables.js"></script>
+    <link href="libs/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="libs/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="libs/dt-core/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="ohsu.css" type="text/css" />
+    <link rel="stylesheet" href="fira-code.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Tidy Inference in R
+## Data Science Programming
+### Alison Hill
+### 2018-03-07
+
+---
+
+
+
+
+
+# Packages
+
+## Install
+
+
+```r
+install.packages("tidyverse")
+install.package("infer") # from CRAN
+# today I'll use the development version
+install.packages("remotes")
+remotes::install_github("andrewpbray/infer", ref = "develop")
+```
+
+--
+
+## Load
+
+
+```r
+library(tidyverse)
+library(infer)
+library(janitor)
+```
+
+
+---
+class: inverse, middle, center
+
+&lt;iframe width = 800px height = 600px src="https://www.youtube.com/embed/M3QYDtSbhrA"&gt;
+&lt;/iframe&gt;
+
+---
+
+# Research Question
+
+If you see someone else yawn, are you more likely to yawn?
+
+In an episode of the show **Mythbusters**, they tested the myth that yawning is contagious. 
+
+---
+
+# Participants and Procedure
+
+--
+
+- `\(N = 50\)` adults who thought they were being considered for an appearance on the show. 
+
+--
+
+- Each participant was interviewed individually by a show recruiter ("confederate") who either
+    - yawned, `\(n = 34\)`
+    - or not, `\(n = 16\)`. 
+
+--
+
+- Participants then sat by themselves in a large van and were asked to wait. 
+
+--
+
+- While in the van for some set amount of time (unknown), the Mythbusters watched to see if the unaware participants yawned.
+
+
+
+---
+
+# Data
+
+Two group design: 
+
+- `\(n = 34\)` saw the confederate yawn (*seed*)
+- `\(n = 16\)` did not see the confederate yawn (*control*)
+
+--
+
+
+```r
+group &lt;- c(rep("control", 12), rep("seed", 24), 
+            rep("control", 4), rep("seed", 10))
+yawn &lt;- c(rep(0, 36), rep(1, 14))
+
+yawn_myth &lt;- data_frame(subj = seq(1, 50), group, yawn) %&gt;% 
+  mutate(yawn = as.factor(yawn))
+
+glimpse(yawn_myth)
+```
+
+```
+Observations: 50
+Variables: 3
+$ subj  &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1...
+$ group &lt;chr&gt; "control", "control", "control", "control", "control", "...
+$ yawn  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
+```
+
+
+---
+class: middle, center
+
+<div id="htmlwidget-6961f8040de4a514e131" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6961f8040de4a514e131">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],["control","control","control","control","control","control","control","control","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed"],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>subj<\/th>\n      <th>group<\/th>\n      <th>yawn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":1},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# Results
+
+
+```r
+yawn_myth %&gt;% 
+  tabyl(group, yawn) %&gt;% 
+  adorn_percentages() %&gt;% 
+  adorn_pct_formatting() %&gt;% 
+  adorn_ns()
+```
+
+```
+   group          0          1
+ control 75.0% (12) 25.0%  (4)
+    seed 70.6% (24) 29.4% (10)
+```
+
+---
+class: inverse, middle, center
+
+## Conclusion
+
+--
+
+## *Finding: CONFIRMED*&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+[1] http://www.discovery.com/tv-shows/mythbusters/mythbusters-database/yawning-contagious/]
+
+---
+
+# Really?
+
+&gt; "Though that's not an enormous increase, since they tested 50 people in the field, the gap was still wide enough for the MythBusters to confirm that yawning is indeed contagious."&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+[1] http://www.discovery.com/tv-shows/mythbusters/mythbusters-database/yawning-contagious/]
+
+
+---
+
+# State the hypotheses
+
+--
+
+`\(H_0\)`:  
+
+&gt; There is no difference between the seed and control groups in the proportion of people who yawned.
+
+--
+
+`\(H_1\)` (directional): 
+
+&gt; The proportion of people who yawned is greater for those in the seed group than in the control group.
+
+---
+
+# Test the hypothesis
+
+Which type of hypothesis test would you conduct here?
+
+- Independent samples t-test
+- Two proportion test
+- Chi-square test of independence
+- Analysis of Variance
+- I don't know!
+
+---
+
+# Test the hypothesis
+
+Which type of hypothesis test would you conduct here?
+
+- Independent samples t-test
+- Two proportion test
+- Chi-square test of independence
+- Analysis of Variance
+- I don't know!
+
+--
+
+&lt;br&gt;
+
+***
+
+Answer: 
+- Two proportion test
+
+
+---
+class: center, middle
+
+# Two proportion test
+
+--
+
+`\(H_0: p_{seed} = p_{control}\)`
+
+--
+
+`\(H_1: p_{seed} &gt; p_{control}\)`
+
+---
+
+# The observed difference
+
+
+```r
+yawn_myth %&gt;%
+  group_by(group) %&gt;%
+  summarize(prop = mean(yawn == 1))
+```
+
+```
+# A tibble: 2 x 2
+  group    prop
+  &lt;chr&gt;   &lt;dbl&gt;
+1 control 0.250
+2 seed    0.294
+```
+
+--
+
+
+```r
+(obs_diff &lt;- yawn_myth %&gt;%
+  group_by(group) %&gt;%
+  summarize(prop = mean(yawn == 1)) %&gt;%
+  summarize(diff(prop)) %&gt;%
+  pull())
+```
+
+```
+[1] 0.04411765
+```
+
+
+
+---
+class: inverse, middle, center
+
+## Is this difference *meaningful*?
+
+--
+
+## Different question: is this difference *significant*?
+
+---
+
+# Modeling the null hypothesis
+
+If... 
+
+`$$H_0: p_{seed} = p_{control}$$`
+
+is true, then whether or not the participant saw someone else yawn does not matter: there is no association between exposure and yawning.
+
+
+---
+class: inverse, center, middle
+
+![](http://directorsnotes.com/wp-content/uploads/2011/11/another_earth_03.jpg)
+---
+
+
+
+.pull-left[
+### Original universe
+
+
+```
+# A tibble: 12 x 3
+    subj group   yawn 
+   &lt;int&gt; &lt;chr&gt;   &lt;fct&gt;
+ 1     1 control 0    
+ 2     2 control 0    
+ 3     3 control 0    
+ 4     4 control 0    
+ 5     5 control 0    
+ 6     6 control 0    
+ 7    15 seed    0    
+ 8    16 seed    0    
+ 9    17 seed    0    
+10    18 seed    0    
+11    19 seed    0    
+12    20 seed    0    
+```
+
+```
+   group  0  1 Total
+ control 12  4    16
+    seed 24 10    34
+   Total 36 14    50
+```
+]
+
+--
+
+.pull-right[
+### Parallel universe
+
+```
+# A tibble: 12 x 3
+    subj parallel_group parallel_yawn
+   &lt;int&gt; &lt;fct&gt;          &lt;fct&gt;        
+ 1     1 control        0            
+ 2     2 control        0            
+ 3     3 control        1            
+ 4     4 control        0            
+ 5     5 control        0            
+ 6     6 control        0            
+ 7    15 seed           0            
+ 8    16 seed           1            
+ 9    17 seed           0            
+10    18 seed           0            
+11    19 seed           0            
+12    20 seed           1            
+```
+
+```
+ parallel_group  0  1 Total
+        control 12  4    16
+           seed 24 10    34
+          Total 36 14    50
+```
+]
+
+---
+
+# 1000 parallel universes
+
+.pull-left[
+
+```
+# A tibble: 1,000 x 2
+   replicate    stat
+       &lt;int&gt;   &lt;dbl&gt;
+ 1         1 -0.140 
+ 2         2 -0.0478
+ 3         3 -0.0478
+ 4         4 -0.0478
+ 5         5 -0.140 
+ 6         6  0.228 
+ 7         7 -0.140 
+ 8         8  0.136 
+ 9         9 -0.232 
+10        10  0.0441
+# ... with 990 more rows
+```
+]
+
+--
+
+.pull-right[
+
+```
+# A tibble: 11 x 2
+   replicate    stat
+       &lt;int&gt;   &lt;dbl&gt;
+ 1       990 -0.232 
+ 2       991 -0.0478
+ 3       992 -0.232 
+ 4       993  0.136 
+ 5       994 -0.140 
+ 6       995  0.136 
+ 7       996 -0.232 
+ 8       997  0.0441
+ 9       998  0.0441
+10       999 -0.232 
+11      1000 -0.140 
+```
+]
+
+---
+## The parallel universe distribution
+
+![](inference_slides_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+
+What are we looking at? 
+
+The distribution of 1000 differences in proportions, if the null hypothesis were *true* and yawning was not contagious. 
+
+In how many of our "parallel universes" is the difference as big or bigger than the one we observed (0.0441176)?
+
+
+---
+## Calculating the p-value
+
+![](inference_slides_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+That proportion is the p-value!
+
+
+```
+# A tibble: 1 x 3
+  n_as_big n_total p_value
+     &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;
+1      512    1000   0.512
+```
+
+---
+class: middle, center
+
+
+[![Only One Test](../images/downey.png)](http://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html)
+
+---
+
+class: inverse, center, middle
+
+# The tidy way
+
+# Use the infer package
+
+
+---
+
+![](../images/infer.073.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+---
+
+![](../images/infer.074.jpeg)
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+
+---
+
+![](../images/infer.075.jpeg)
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+
+---
+
+![](../images/infer.076.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+---
+
+![](../images/infer.077.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+---
+
+![](../images/infer.078.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+---
+
+![](../images/infer.079.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+---
+
+![](../images/infer.080.jpeg)
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+
+---
+
+![](../images/infer.081.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+---
+
+![](../images/infer.082.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+---
+
+![](../images/infer.084.jpeg)
+
+&lt;small&gt;https://github.com/ismayc/talks/tree/master/data-day-texas-infer&lt;/small&gt;
+
+---
+
+# `infer`
+
+5 functions:
+
+- `specify()`
+- `hypothesize()`
+- `generate()`
+- `calculate()`
+- `visualize()`
+
+---
+
+# `infer`
+
+- `specify` the response and explanatory variables (`y ~ x`; for proportion also need `success`)
+- `hypothesize` what the null `\(H_0\)` is (here, `independence` of `y` and `x`)
+- `generate` new samples from parallel universes:
+    - Resample from our original data **without replacement**, each time shuffling the `group` (`type = "permute"`)
+    - Do this **a ton of times** (`reps = 1000`)
+- `calculate` the *new* statistic (here, difference in proportions) for each `rep`
+- `visualize` the output
+
+
+
+```r
+set.seed(8)
+null_distn &lt;- yawn_myth %&gt;% 
+  specify(formula = yawn ~ group, success = "1") %&gt;% 
+  hypothesize(null = "independence") %&gt;% 
+  generate(reps = 1000, type = "permute") %&gt;% 
+  calculate(stat = "diff in props", order = c("seed", "control"))
+```
+
+---
+
+# Plot the null distribution
+
+
+```r
+ggplot(null_distn, aes(stat)) +
+  geom_histogram() +
+  geom_vline(xintercept = obs_diff, color = "blue") +
+  labs(x = "Difference in proportions")
+```
+
+![](inference_slides_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
+---
+
+# Classical inference
+
+Relies on theory to tell us what the null distribution looks like. 
+
+
+```r
+yawn_myth %&gt;%
+  specify(yawn ~ group, success = "1") %&gt;%
+  hypothesize(null = "independence") %&gt;% 
+  # generate() is not needed since we are not doing randomization
+  # calculate(stat = "z") is implied based on variable types
+  visualize(method = "theoretical")
+```
+
+![](inference_slides_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+
+
+---
+# Classical vs resampling
+
+I changed the `stat` to calculate to `z` now (before we did `diff in props`). 
+
+
+```r
+yawn_myth %&gt;%
+  specify(yawn ~ group, success = "1") %&gt;%
+  hypothesize(null = "independence") %&gt;% 
+  generate(reps = 1000, type = "permute") %&gt;% 
+  calculate(stat = "z", order = c("seed", "control")) %&gt;% 
+  visualize(method = "both")
+```
+
+![](inference_slides_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+---
+
+# Do the test in R
+
+
+```r
+yawn_table &lt;- table(group, yawn)
+yz &lt;- prop.test(x = yawn_table,
+          n = nrow(yawn_myth),
+          alternative = "greater",
+          correct = FALSE) 
+yz
+```
+
+```
+
+	2-sample test for equality of proportions without continuity
+	correction
+
+data:  yawn_table
+X-squared = 0.10504, df = 1, p-value = 0.3729
+alternative hypothesis: greater
+95 percent confidence interval:
+ -0.1754872  1.0000000
+sample estimates:
+   prop 1    prop 2 
+0.7500000 0.7058824 
+```
+
+---
+
+# In class exercise
+---
+
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "atelier-lakeside-light",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

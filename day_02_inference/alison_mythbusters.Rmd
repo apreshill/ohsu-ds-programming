@@ -1,0 +1,66 @@
+---
+title: "Alison Mythbusters"
+author: "Chester Ismay"
+date: "3/6/2018"
+output: html_document
+---
+
+```{r setup, message=FALSE}
+library(tidyverse)
+# install.packages("infer")
+library(infer)
+
+seeded <- c(rep("no seed", 12), rep("seed", 24), 
+            rep("no seed", 4), rep("seed", 10))
+yawned <- c(rep("no yawn", 36), rep("yawn", 14))
+
+mythbust <- data_frame(seeded, yawned)
+
+set.seed(2018)
+```
+
+# Observed stat
+
+```{r}
+(obs_diff <- mythbust %>%
+  group_by(seeded) %>%
+  summarize(prop = mean(yawned == "yawn")) %>%
+  summarize(diff(prop)) %>%
+  pull())
+```
+
+# Permute to create null distribution
+
+```{r}
+null_distn <- mythbust %>% 
+  specify(formula = yawned ~ seeded,
+          success = "yawn") %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in props", 
+            order = c("seed", "no seed"))
+
+ggplot(data = null_distn, mapping = aes(x = stat)) +
+  geom_bar() +
+  geom_vline(xintercept = obs_diff, 
+             color = "red",
+             size = 2)
+
+null_distn %>% 
+  summarize(p_value = mean(stat >= obs_diff))
+```
+
+
+# Theoretical
+
+```{r}
+prop.test(x = table(mythbust$seeded, mythbust$yawned),
+          n = nrow(mythbust),
+          alternative = "greater",
+          correct = FALSE) %>% 
+  `$`("p.value")
+
+fisher.test(x = table(mythbust$seeded, mythbust$yawned),
+            alternative = "greater") %>% 
+  `$`("p.value")
+```
