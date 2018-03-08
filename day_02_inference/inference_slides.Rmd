@@ -20,9 +20,8 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE,
   comment=NA,fig.width=10.5, fig.height=4)
 ```
 
-# Packages
+# Install Packages
 
-## Install
 
 ```{r eval = FALSE}
 install.packages("tidyverse")
@@ -30,11 +29,13 @@ install.package("infer") # from CRAN
 # today I'll use the development version
 install.packages("remotes")
 remotes::install_github("andrewpbray/infer", ref = "develop")
+install.packages("devtools")
+devtools::install_github("sfirke/janitor")
 ```
 
---
+---
 
-## Load
+## Load Packages
 
 ```{r}
 library(tidyverse)
@@ -556,6 +557,9 @@ What does this test assume?
 - Use `infer` to compare a numerical variable between the two groups using:
     - A permutation test and
     - A classical theoretical test.
+    
+See: https://infer-dev.netlify.com/index.html
+
 
 ---
 

@@ -29,9 +29,8 @@ class: center, middle, inverse, title-slide
 
 
 
-# Packages
+# Install Packages
 
-## Install
 
 
 ```r
@@ -40,11 +39,13 @@ install.package("infer") # from CRAN
 # today I'll use the development version
 install.packages("remotes")
 remotes::install_github("andrewpbray/infer", ref = "develop")
+install.packages("devtools")
+devtools::install_github("sfirke/janitor")
 ```
 
---
+---
 
-## Load
+## Load Packages
 
 
 ```r
@@ -127,8 +128,8 @@ $ yawn  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
 ---
 class: middle, center
 
-<div id="htmlwidget-a6160a1efae7797e2b32" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a6160a1efae7797e2b32">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],["control","control","control","control","control","control","control","control","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed"],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>subj<\/th>\n      <th>group<\/th>\n      <th>yawn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":1},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-efca337c95d4b65fd487" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-efca337c95d4b65fd487">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],["control","control","control","control","control","control","control","control","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed"],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>subj<\/th>\n      <th>group<\/th>\n      <th>yawn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":1},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -639,6 +640,9 @@ What does this test assume?
 - Use `infer` to compare a numerical variable between the two groups using:
     - A permutation test and
     - A classical theoretical test.
+    
+See: https://infer-dev.netlify.com/index.html
+
 
 ---
 
