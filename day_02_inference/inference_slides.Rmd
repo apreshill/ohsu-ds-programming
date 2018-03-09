@@ -25,7 +25,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE,
 
 ```{r eval = FALSE}
 install.packages("tidyverse")
-install.packages("infer") # from CRAN
+install.packages("broom") 
 # today I'll use the development version
 install.packages("remotes")
 remotes::install_github("andrewpbray/infer", ref = "develop")
@@ -41,6 +41,7 @@ devtools::install_github("sfirke/janitor")
 library(tidyverse)
 library(infer)
 library(janitor)
+library(broom)
 ```
 
 
@@ -503,7 +504,16 @@ visualize(null_distn, bins = 10) +
 
 # Classical inference
 
-Rely on theory to tell us what the null distribution looks like. 
+Rely on theory to tell us what the null distribution looks like.
+
+```{r include = FALSE}
+yawn_table <- table(group, yawn)
+yz <- prop.test(x = yawn_table, n = nrow(yawn_myth),
+          alternative = "greater", correct = FALSE) 
+obs_stat <- yz %>% 
+  broom::tidy(yz) %>% 
+  pull(statistic)
+```
 
 ```{r}
 yawn_myth %>%
@@ -511,15 +521,16 @@ yawn_myth %>%
   hypothesize(null = "independence") %>% 
   # generate() is not needed since we are not doing randomization
   # calculate(stat = "z") is implied based on variable types
-  visualize(method = "theoretical")  +
-  geom_vline(xintercept = obs_diff, color = "dodgerblue", size = 2) 
+  visualize(method = "theoretical") +
+  geom_vline(xintercept = obs_stat, color = "orchid", size = 2) 
 ```
+
 
 
 ---
 # Classical vs resampling
 
-Changed the `stat` to calculate to `z` now (before we did `diff in props`). 
+Changed the `stat` to calculate to `z` now (before we did `diff in props`).  
 
 ```{r}
 yawn_myth %>%
@@ -528,7 +539,7 @@ yawn_myth %>%
   generate(reps = 1000, type = "permute") %>% 
   calculate(stat = "z", order = c("seed", "control")) %>% 
   visualize(method = "both", bins = 10) +
-  geom_vline(xintercept = obs_diff, color = "dodgerblue", size = 2) 
+  geom_vline(xintercept = obs_stat, color = "orchid", size = 2)  
 ```
 
 ---
@@ -545,6 +556,20 @@ yz
 --
 
 What does this test assume?
+
+---
+
+# Pull out the z statistic
+
+The observed `z` value is `r obs_stat`. 
+
+```{r}
+obs_stat <- yz %>% 
+  broom::tidy(yz) %>% 
+  pull(statistic)
+```
+
+Now you can use `obs_stat` in `geom_vline(xintercept = obs_stat)` when added to `visualize`!
 
 ---
 
