@@ -577,10 +577,11 @@ Now you can use `obs_stat` in `geom_vline(xintercept = obs_stat)` when added to 
 
 - Read in the `mazes` data (http://bit.ly/mazes-gist)
 
-```{r eval = FALSE}
+```{r}
 library(readr)
 mazes <- read_csv("http://bit.ly/mazes-gist") %>% 
-  clean_names() #janitor package
+  clean_names() %>%  #janitor package
+  filter(dx %in% c("ASD", "TD"))
 ```
 
 
@@ -594,6 +595,35 @@ See: https://infer-dev.netlify.com
 
 About the data: [Quantitative analysis of disfluency in children with autism spectrum disorder or language impairment](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0173936)
 
+---
+
+# Classical t-test in R
+
+- Independent samples (`paired = FALSE`)
+- Assume equal variances (`var.equal = TRUE`)
+- `alternative` is relative to the groups *alphabetically*: so here $H_1 = \mu_{asd} < \mu_{td}$
+
+```{r}
+myt <- t.test(viq ~ dx, 
+              data = mazes, 
+              var.equal = TRUE, 
+              paired = FALSE, 
+              alternative = "less")
+myt 
+```
+
+---
+
+# Save the t statistic
+  
+```{r}
+obs_t <- myt %>% 
+  tidy() %>% # from broom
+  pull(statistic) # from dplyr
+obs_t
+```
+
+Now you can use `obs_t` in `geom_vline(xintercept = obs_t)` when added to `visualize`!
 
 ---
 

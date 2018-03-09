@@ -4,7 +4,7 @@
     <title>Tidy Inference in R</title>
     <meta charset="utf-8">
     <meta name="author" content="Alison Hill" />
-    <meta name="date" content="2018-03-08" />
+    <meta name="date" content="2018-03-09" />
     <script src="libs/htmlwidgets/htmlwidgets.js"></script>
     <script src="libs/jquery/jquery.min.js"></script>
     <script src="libs/datatables-binding/datatables.js"></script>
@@ -21,7 +21,7 @@ class: center, middle, inverse, title-slide
 # Tidy Inference in R
 ## Data Science Programming
 ### Alison Hill
-### 2018-03-08
+### 2018-03-09
 
 ---
 
@@ -129,8 +129,8 @@ $ yawn  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
 ---
 class: middle, center
 
-<div id="htmlwidget-30a606381468a807ccea" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-30a606381468a807ccea">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],["control","control","control","control","control","control","control","control","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed"],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>subj<\/th>\n      <th>group<\/th>\n      <th>yawn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":1},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-02a1908619c15f21276f" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-02a1908619c15f21276f">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],["control","control","control","control","control","control","control","control","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","control","control","control","control","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed"],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>subj<\/th>\n      <th>group<\/th>\n      <th>yawn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":1},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -658,7 +658,8 @@ Now you can use `obs_stat` in `geom_vline(xintercept = obs_stat)` when added to 
 ```r
 library(readr)
 mazes &lt;- read_csv("http://bit.ly/mazes-gist") %&gt;% 
-  clean_names() #janitor package
+  clean_names() %&gt;%  #janitor package
+  filter(dx %in% c("ASD", "TD"))
 ```
 
 
@@ -672,6 +673,55 @@ See: https://infer-dev.netlify.com
 
 About the data: [Quantitative analysis of disfluency in children with autism spectrum disorder or language impairment](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0173936)
 
+---
+
+# Classical t-test in R
+
+- Independent samples (`paired = FALSE`)
+- Assume equal variances (`var.equal = TRUE`)
+- `alternative` is relative to the groups *alphabetically*: so here `\(H_1 = \mu_{asd} &lt; \mu_{td}\)`
+
+
+```r
+myt &lt;- t.test(viq ~ dx, 
+              data = mazes, 
+              var.equal = TRUE, 
+              paired = FALSE, 
+              alternative = "less")
+myt 
+```
+
+```
+
+	Two Sample t-test
+
+data:  viq by dx
+t = -11.842, df = 308, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means is less than 0
+95 percent confidence interval:
+      -Inf -18.63839
+sample estimates:
+mean in group ASD  mean in group TD 
+         95.28962         116.94488 
+```
+
+---
+
+# Save the t statistic
+  
+
+```r
+obs_t &lt;- myt %&gt;% 
+  tidy() %&gt;% # from broom
+  pull(statistic) # from dplyr
+obs_t
+```
+
+```
+[1] -11.84247
+```
+
+Now you can use `obs_t` in `geom_vline(xintercept = obs_t)` when added to `visualize`!
 
 ---
 
